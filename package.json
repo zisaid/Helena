@@ -1,0 +1,22 @@
+{
+  "name": "helena",
+  "version": "1.0.1",
+  "description": "NLP",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zisaid/Helena.git"
+  },
+  "keywords": [
+    "helena", "NLP"
+  ],
+  "author": "zisaid",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zisaid/Helena/issues"
+  },
+  "homepage": "https://github.com/zisaid/Helena#readme"
+}
