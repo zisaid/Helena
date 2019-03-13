@@ -1,5 +1,5 @@
-let tokenizer = require('./lib/tokenizer');
+let server = require('./lib/server');
 
 module.exports = {
-    tokenizer: tokenizer
+    server: server
 };
