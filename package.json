@@ -1,7 +1,7 @@
 {
   "name": "helena",
-  "version": "1.0.1",
-  "description": "NLP",
+  "version": "1.0.3",
+  "description": "Minimal, Hi-speed Framework",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/zisaid/Helena.git"
   },
   "keywords": [
-    "helena", "NLP"
+    "Framework", "Server"
   ],
   "author": "zisaid",
   "license": "MIT",
