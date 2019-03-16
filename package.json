@@ -1,6 +1,6 @@
 {
   "name": "helena",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "NLP",
   "main": "index.js",
   "scripts": {
@@ -11,12 +11,20 @@
     "url": "git+https://github.com/zisaid/Helena.git"
   },
   "keywords": [
-    "helena", "NLP"
+    "helena",
+    "NLP"
   ],
   "author": "zisaid",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/zisaid/Helena/issues"
   },
-  "homepage": "https://github.com/zisaid/Helena#readme"
+  "homepage": "https://github.com/zisaid/Helena#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "elasticsearch": "^15.4.1",
+    "mongodb": "^3.1.13",
+    "mongoose": "^5.4.19",
+    "redis": "^2.8.0"
+  }
 }
