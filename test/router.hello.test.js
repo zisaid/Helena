@@ -3,7 +3,7 @@ const router = server.router();
 
 router.get('/hello', function (req, res, next) {
     res.status(500);
-    res.end();
+    res.end('500');
 });
 
 module.exports = router;
