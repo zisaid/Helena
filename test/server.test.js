@@ -1,10 +1,10 @@
-const server = require('../lib/server');
+const app = require('../lib/server');
 
 let testHelloRouter = require('./router.hello.test');
 let testHiRouter = require('./router.hi.test');
 
-server.use('/hello', testHelloRouter);
-server.use('/hi', testHiRouter);
+app.use('/hello', testHelloRouter);
+app.use('/hi', testHiRouter);
 
 let allowCrossDomain = function (req, res) {
     res.header('Access-Control-Allow-Origin', '*');
@@ -13,6 +13,13 @@ let allowCrossDomain = function (req, res) {
     res.header('Access-Control-Allow-Credentials', 'true');
 };
 
-server.use(allowCrossDomain);
+app.use(allowCrossDomain);
 
-server.start(3109);
+app.all('/*', function (req, res) {
+    console.log('/');
+})
+app.all('/*i/hi', function (req, res) {
+    console.log(req.router);
+})
+
+app.start(3109);
