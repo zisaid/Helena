@@ -15,5 +15,4 @@
 >- app.use(),可以在response前加自定义header
 
 # Todo List
-- 发送信息加密支持
 - 设置，处理cookie
