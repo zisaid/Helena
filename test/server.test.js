@@ -1,4 +1,5 @@
 const app = require('../lib/server');
+const jsonEncryption = require('../utils/jsonEncryption');
 
 let testHelloRouter = require('./router.hello.test');
 let testHiRouter = require('./router.hi.test');
@@ -15,6 +16,7 @@ let allowCrossDomain = function (req, res, next) {
 };
 
 app.use(allowCrossDomain);
+app.use(jsonEncryption);
 
 app.before('/*', function (req, res, next) {
 //    console.log('before:/');
