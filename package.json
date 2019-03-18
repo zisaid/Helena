@@ -1,7 +1,7 @@
 {
   "name": "helena",
-  "version": "1.0.3",
-  "description": "Minimal, Hi-speed Framework",
+  "version": "1.0.7",
+  "description": "Mini, Hi-speed Framework",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,12 +11,21 @@
     "url": "git+https://github.com/zisaid/Helena.git"
   },
   "keywords": [
-    "Framework", "Server"
+    "Mini",
+    "Hi-speed",
+    "Framework"
   ],
   "author": "zisaid",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/zisaid/Helena/issues"
   },
-  "homepage": "https://github.com/zisaid/Helena#readme"
+  "homepage": "https://github.com/zisaid/Helena#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "elasticsearch": "^15.4.1",
+    "mongodb": "^3.1.13",
+    "mongoose": "^5.4.19",
+    "redis": "^2.8.0"
+  }
 }
