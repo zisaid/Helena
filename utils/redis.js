@@ -1,6 +1,6 @@
-const redisClient = require('redis')
+const redisClient = require('redis');
 let client = null;
-let prefix = '';
+let prefix = 'helena:';
 
 let redis = {};
 
@@ -10,10 +10,10 @@ redis.L = 864000;//10*24*60*60 10 days
 redis.M = 90000;//25*60*60 25 hours
 redis.S = 4200;//70*60 70 minutes
 
-redis.init = function(server, port, pass, pre){
+redis.init = function(server, port, pass, machineCode){
     client = redisClient.createClient(port, server, {auth_pass: pass});
-    prefix = pre;
-}
+    prefix = machineCode + ':';
+};
 
 redis.SET = function(id, value, expires = redis.L) {
     return new Promise((resolve, reject) => {
@@ -43,7 +43,7 @@ redis.GET = function(id, expires = redis.L ){
             }
         });
     });
-}
+};
 
 redis.DEL = function(id){
     return new Promise((resolve, reject) => {
@@ -55,7 +55,7 @@ redis.DEL = function(id){
             }
         });
     });
-}
+};
 
 redis.ALL = async function(pattern = '*'){
     return new Promise((resolve, reject) => {
@@ -89,7 +89,7 @@ redis.ALL = async function(pattern = '*'){
             }
         });
     });
-}
+};
 
 redis.TTL = function(id){
     return new Promise((resolve, reject) => {
@@ -101,6 +101,5 @@ redis.TTL = function(id){
             }
         });
     });
-}
-
+};
 module.exports = redis;

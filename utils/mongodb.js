@@ -6,7 +6,7 @@ let mongodb = {};
 
 mongodb.init = function(mongodbUrl){
     url = mongodbUrl;
-}
+};
 
 mongodb.write = function (db, collection, objArr) {
     return new Promise((resolve, reject) => {
