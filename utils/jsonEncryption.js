@@ -7,6 +7,9 @@ module.exports = {
         if(req.query.sid && req.query.sid.length > 31){
             key = req.query.sid.substr(0, 24);
             iv = req.query.sid.substr(15, 16);
+        } else if(req.headers.token && req.headers.token.length > 31){
+            key = req.headers.token.substr(0, 24);
+            iv = req.headers.token.substr(15, 16);
         }
         this.jsonEncryption = function (json) {
             if(key && iv) {

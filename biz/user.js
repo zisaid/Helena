@@ -4,7 +4,7 @@ let redis = require('../utils/redis');
 
 let mc = 'helena';
 let db = 'helena';
-let table = 'helenauser';
+let table = 'hln_user';
 
 let user = {};
 
@@ -23,7 +23,7 @@ user.login = function (username, password) {
             mongodb.read(db, table, condition)
                 .then(result => {
                     if (result.length > 0) {
-                        filterUserInfo(result[0])
+                        userInfoRedis(result[0])
                             .then(res => {
                                 resolve(res);
                             });
@@ -60,7 +60,7 @@ user.register = function(username, password, info){
                                 mongodb.read(db, table, condition)
                                     .then(result => {
                                         if (result.length > 0) {
-                                            filterUserInfo(result[0])
+                                            userInfoRedis(result[0])
                                                 .then(res => {
                                                     resolve(res);
                                                 });
@@ -101,7 +101,7 @@ function unicode(key) {
 
 }
 
-function filterUserInfo(userinfo) {
+function userInfoRedis(userinfo) {
     return new Promise(resolve => {
         let id = userinfo._id.toString();
         let token = unicode(id);
