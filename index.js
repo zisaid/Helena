@@ -6,6 +6,8 @@ const mongodb = require('./utils/mongodb');
 const request = require('./utils/request');
 const redis = require('./utils/redis');
 
+const user = require('./biz/user');
+
 module.exports = {
     server: server,
     elasticsearch: elasticsearch,
@@ -13,5 +15,6 @@ module.exports = {
     log: log,
     mongodb: mongodb,
     request: request,
-    redis: redis
+    redis: redis,
+    user:user
 };

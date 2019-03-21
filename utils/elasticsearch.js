@@ -6,9 +6,11 @@ let elasticsearch = {};
 elasticsearch.init = function(host, httpAuth){
     let para = {};
     para.host = host;
-    para.httpAuth = httpAuth;
+    if(httpAuth) {
+        para.httpAuth = httpAuth;
+    }
     client = new es.Client(para);
-}
+};
 
 elasticsearch.index = function (index, type, id, body) {
     return new Promise((resolve, reject) => {
@@ -24,7 +26,7 @@ elasticsearch.index = function (index, type, id, body) {
             reject(err);
         });
     });
-}
+};
 
 elasticsearch.match = function (index, type, query, size = 200) {
     return new Promise((resolve, reject) => {
@@ -43,7 +45,7 @@ elasticsearch.match = function (index, type, query, size = 200) {
                 reject(err);
             });
     });
-}
+};
 
 elasticsearch.get = function (index, type, id) {
     return new Promise((resolve, reject) => {
@@ -63,7 +65,7 @@ elasticsearch.get = function (index, type, id) {
                 reject(err);
             });
     });
-}
+};
 
 elasticsearch.delete = function (index, type, id) {
     return new Promise((resolve, reject) => {
@@ -79,6 +81,6 @@ elasticsearch.delete = function (index, type, id) {
                 reject(err);
             });
     });
-}
+};
 
 module.exports = elasticsearch;

@@ -14,12 +14,12 @@ user.init = function (userDb, userTable, machineCode) {
     mc = machineCode;
 };
 
-user.login = function (username, password) {
+user.login = function (username, password, addMc = true) {
     return new Promise((resolve, reject) => {
         username = username.toString();
         password = password.toString();
         if (username && password) {
-            const condition = {username: username, password: md5(password)};
+            const condition = {username: username, password: md5(password, addMc)};
             mongodb.read(db, table, condition)
                 .then(result => {
                     if (result.length > 0) {
@@ -41,7 +41,7 @@ user.login = function (username, password) {
     });
 };
 
-user.register = function (username, password, info) {
+user.register = function (username, password, info, addMc = true) {
     return new Promise((resolve, reject) => {
         username = username.toString();
         password = password.toString();
@@ -53,10 +53,10 @@ user.register = function (username, password, info) {
                         reject('err: username used');
                     } else {
                         info.username = username;
-                        info.password = md5(password);
+                        info.password = md5(password, addMc);
                         mongodb.write(db, table, info)
                             .then(() => {
-                                const condition = {username: username, password: md5(password)};
+                                const condition = {username: username, password: md5(password, addMc)};
                                 mongodb.read(db, table, condition)
                                     .then(result => {
                                         if (result.length > 0) {
@@ -157,8 +157,9 @@ user.getUserByToken = function (token) {
 
 module.exports = user;
 
-function md5(key) {
-    return crypto.createHash('md5').update(mc + key, 'utf-8').digest('hex');
+function md5(key, addMc = true) {
+    if(addMc) key = mc + key;
+    return crypto.createHash('md5').update(key, 'utf-8').digest('hex');
 }
 
 function unicode(key) {
@@ -189,10 +190,10 @@ function userInfoRedis(userinfo, generateToken = true) {
                             //没有生成新的token，则还用原来的。主要用在对用户某个信息的更新，如改密码
                             userinfo.token = oUser.token;
                         }
-                        redis.SET(id, JSON.stringify(userinfo));
-                        resolve(userinfo);
                     }
                 }
+                redis.SET(id, JSON.stringify(userinfo));
+                resolve(userinfo);
             })
             .catch(() => {
                 redis.SET(id, JSON.stringify(userinfo));
