@@ -1,5 +1,9 @@
 # 日志
-
+- 1.0.10 增加用户管理
+>- init 初始化，设置数据库参数
+>- login 登录
+>- register 注册
+>- update 更新
 - 1.0.9 增加json输出加密插件
 >- 插件样例在/utils/jsonEncryption.js
 >- 这个样例要求请求时必须带上sid或header里带token(sessionId,32位)，若无，输出空
