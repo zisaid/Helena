@@ -89,10 +89,14 @@ user.register = function (username, password, info, addMc = true) {
     });
 };
 
-user.update = function (username, info) {
+user.update = function (username, password, info, addMc) {
+    //如果需要修改密码，就需要用户把密码明文传过来，避免加密方式不同无法登录
     return new Promise((resolve, reject) => {
         username = username.toString();
+        if(info.password) delete info.password;
+        if(password) info.password = md5(password, addMc);
         if (username) {
+            info.username = username;
             const condition = {username: username};
             let needToken;
             if (info.token){
