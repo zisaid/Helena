@@ -2,7 +2,7 @@
 const path = require('path');
 
 let memLog = {};
-let basePath = '';
+let basePath = '/data/log';
 
 let log = {};
 
@@ -35,7 +35,7 @@ let getAllFiles = function (dirpath, files = []) {
     return files;
 };
 
-log.save = function (appid, userid, type, info, basePath, req) {
+log.save = function (appid, userid, type, info, req) {
     let ip = '';
     try {
         ip = req.ip
@@ -80,7 +80,7 @@ log.save = function (appid, userid, type, info, basePath, req) {
     }
 };
 
-log.readByNumber = function (appid, userid, type, start, number, basePath) {
+log.readByNumber = function (appid, userid, type, start, number) {
     let path = makePath(basePath, appid, userid, type);
     let count = start + number;
     let logs = (memLog[path]) ? [...memLog[path].value] : [];
@@ -99,7 +99,7 @@ log.readByNumber = function (appid, userid, type, start, number, basePath) {
     return (logs);
 };
 
-log.readByDay = function (appid, userid, type, day, basePath) {
+log.readByDay = function (appid, userid, type, day) {
     let path = makePath(basePath, appid, userid, type);
     let logs = [];
     if (memLog[path] && memLog[path].date === day) {
@@ -123,7 +123,7 @@ log.saveMemLog = function () {
         delete memLog[path];
         count++;
     }
-    log.save('SYSTEM', 0, 'crond', 'save ' + count, basePath);
+    log.save('SYSTEM', 0, 'crond', 'save ' + count);
     return ('save ' + count.toString() + ' to file done.');
 };
 
