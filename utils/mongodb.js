@@ -29,9 +29,8 @@ mongodb.write = function (db, collection, objArr) {
     });
 };
 
-mongodb.read = function (db, collection, condition, sort = -1, page) {
+mongodb.read = function (db, collection, condition = {}, sort = -1) {
     // TODO 需要考虑分页
-    if (!condition) condition = {};
     if ((typeof sort) === 'number') {
         sort = {_id: sort};
     }
