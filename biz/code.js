@@ -188,7 +188,8 @@ code.create = function (type) {
             'disabled': false,
             'children': []
         };
-        codes[type + 'Arr'][0] = codes[type];
+        codes[type + 'Arr'] = [];
+        codes[type + 'Arr'].push(codes[type]);
         code.save2db(type);
         result = true;
     }
@@ -200,7 +201,7 @@ code.modifyLabel = function (type, nodeCode, label) {
     let result = false;
     if (nodeCode > 0 && codes[type + 'Arr'] && codes[type + 'Arr'][nodeCode]) {
         codes[type + 'Arr'][nodeCode].label = label;
-        nodeCode.save2db(type);
+        code.save2db(type);
         result = true;
     }
     if (result) result = codes[type];
@@ -231,7 +232,15 @@ code.moveSubtree = function (type, nodeCode, toNodeCode, way) {
                 codesType[nodeCode].fid = toNodeCode;
                 codesType[toNodeCode].children.push(codesType[nodeCode]);
             } else {
-                codesType[nodeCode].fid = codesType[toNodeCode].fid;
+                fatherCode = codesType[toNodeCode].fid;
+                codesType[nodeCode].fid = fatherCode;
+                site = - 1;
+                for (let i = 0; i < codesType[fatherCode].children.length; i++) {
+                    if (codesType[fatherCode].children[i].id === toNodeCode) {
+                        site = i;
+                        break;
+                    }
+                }
                 if (way === code.AFTER) site++;
                 codesType[fatherCode].children.splice(site, 0, codesType[nodeCode]);
             }
@@ -273,7 +282,7 @@ code.copySubtree = function (type, nodeCode, toNodeCode, way) {
             codesType[toNodeCode].children.push(newNode);
         } else {
             newNode.fid = codesType[toNodeCode].fid;
-            let children = codesType[toNodeCode.fid].children;
+            let children = codesType[newNode.fid].children;
             let site = -1;
             for (let i = 0; i < children.length; i++) {
                 if (children[i].id === toNodeCode) {
@@ -285,25 +294,25 @@ code.copySubtree = function (type, nodeCode, toNodeCode, way) {
                 if (way === code.AFTER) site++;
                 children.splice(site, 0, newNode);
             }
-            result = true;
-            code.save2db(type);
         }
-        if (result) result = codes[type];
-        return result;
+        result = true;
+        code.save2db(type);
     }
+    if (result) result = codes[type];
+    return result;
 };
 
 code.changeSubtreeDisabledValue = function (type, nodeCode, disabled) {
     let result = false;
     let codesType = codes[type + 'Arr'];
-    let f = function (type, nodeCode, disabled) {
-        codesType[nodeCode].disabled = disabled;
-        codesType[nodeCode].children.forEach(sonNode => {
+    let f = function (type, node, disabled) {
+        node.disabled = disabled;
+        node.children.forEach(sonNode => {
             f(type, sonNode, disabled);
         });
     };
     if (codesType && codesType[nodeCode]) {
-        f(type, nodeCode, disabled);
+        f(type, codesType[nodeCode], disabled);
         code.save2db(type);
         result = true;
     }

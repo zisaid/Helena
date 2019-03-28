@@ -1,6 +1,6 @@
 {
   "name": "helena",
-  "version": "1.0.25",
+  "version": "1.0.34",
   "description": "Mini, Hi-speed Framework",
   "main": "index.js",
   "scripts": {
