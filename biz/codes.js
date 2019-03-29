@@ -1,31 +1,29 @@
-const mongodb = require('../utils/mongodb');
+const fs = require('fs');
+const path = require('path');
 
-let codes;
+let codes = {};
 let codeLock = false;
-
-let db = 'res';
-let table = 'codes';
-
+let codePath = '/data/systemdata/codes';
 let code = {};
 
 code.BEFORE = -1;
 code.AFTER = 1;
 code.SON = 0;
 
-code.init = function (codeDb, codeTable) {
-    db = codeDb;
-    table = codeTable;
+code.init = function (basePath) {
+    codePath = basePath;
 };
 
 code.freshCodes = function () {
-    codes = undefined;
+    codes = {};
     codeLock = false;
+    return true;
 };
 
-code.onReady = function () {
-    return new Promise((resolve, reject) => {
+code.onReady = function (type) {
+    return new Promise(resolve => {
         if (codeLock) {
-            sleep(200)
+            sleep(100)
                 .then(() => {
                     code.onReady()
                         .then(res => {
@@ -33,33 +31,35 @@ code.onReady = function () {
                         });
                 });
         } else {
-            if (codes) {
-                resolve(true);
-            } else {
+            if (!codes[type]) {
                 codeLock = true;
-                let mkArr = function (obj, arr) {
-                    arr[obj.id] = obj;
-                    for (let son of obj.children) {
-                        mkArr(son, arr);
-                    }
-                };
-                codes = {};
-                mongodb.read(db, table)
-                    .then(res => {
-                        for (let re of res) {
-                            codes[re.label] = re;
-                            codes[re.label + 'Arr'] = [];
-                            mkArr(codes[re.label], codes[re.label + 'Arr']);
+                fs.readFile(codePath + '/' + type + '/' + type + '.json', 'utf8', (err, data) => {
+                    if (err) {
+                        codes[type] = {
+                            'label': type,
+                            'id': 0,
+                            'fid': -1,
+                            'idcount': 0,
+                            'disabled': false,
+                            'children': []
+                        };
+                        codes[type + 'Arr'] = [];
+                        codes[type + 'Arr'].push(codes[type]);
+                    } else {
+                        for (let re of JSON.parse(data)) {
+                            codes[type] = re;
+                            codes[type + 'Arr'] = [];
+                            mkArr(codes[type], codes[type + 'Arr']);
                         }
-                        codeLock = false;
-                        resolve(true);
-                    })
-                    .catch(err => {
-                        codeLock = false;
-                        reject(err);
-                    });
+                    }
+                    codeLock = false;
+                    resolve(true);
+                });
+            } else {
+                resolve(true);
             }
         }
+
     });
 };
 
@@ -168,32 +168,17 @@ code.sort = function (type, c1, c2) {
     return result;
 };
 
-code.save2db = function (type) {
+code.save = function (type) {
     let result = false;
     if (codes[type]) {
-        mongodb.update(db, table, {label: type}, codes[type]);
+        mkDirs(codePath + '/' + type);
+        if (fs.existsSync(codePath + '/' + type + '/' + type + '.json')) {
+            fs.renameSync(codePath + '/' + type + '/' + type + '.json', codePath + '/' + type + '/' + (new Date()).valueOf().toString() + '.json');
+        }
+        fs.writeFile(codePath + '/' + type + '/' + type + '.json', JSON.stringify(codes[type]), () => {
+        });
         result = true;
     }
-    return result;
-};
-
-code.create = function (type) {
-    let result = false;
-    if (!codes[type]) {
-        codes[type] = {
-            'label': type,
-            'id': 0,
-            'fid': -1,
-            'idcount': 0,
-            'disabled': false,
-            'children': []
-        };
-        codes[type + 'Arr'] = [];
-        codes[type + 'Arr'].push(codes[type]);
-        code.save2db(type);
-        result = true;
-    }
-    if (result) result = codes[type];
     return result;
 };
 
@@ -201,7 +186,7 @@ code.modifyLabel = function (type, nodeCode, label) {
     let result = false;
     if (nodeCode > 0 && codes[type + 'Arr'] && codes[type + 'Arr'][nodeCode]) {
         codes[type + 'Arr'][nodeCode].label = label;
-        code.save2db(type);
+        code.save(type);
         result = true;
     }
     if (result) result = codes[type];
@@ -234,7 +219,7 @@ code.moveSubtree = function (type, nodeCode, toNodeCode, way) {
             } else {
                 fatherCode = codesType[toNodeCode].fid;
                 codesType[nodeCode].fid = fatherCode;
-                site = - 1;
+                site = -1;
                 for (let i = 0; i < codesType[fatherCode].children.length; i++) {
                     if (codesType[fatherCode].children[i].id === toNodeCode) {
                         site = i;
@@ -245,7 +230,7 @@ code.moveSubtree = function (type, nodeCode, toNodeCode, way) {
                 codesType[fatherCode].children.splice(site, 0, codesType[nodeCode]);
             }
             result = true;
-            code.save2db(type);
+            code.save(type);
         }
     }
     if (result) result = codes[type];
@@ -296,7 +281,7 @@ code.copySubtree = function (type, nodeCode, toNodeCode, way) {
             }
         }
         result = true;
-        code.save2db(type);
+        code.save(type);
     }
     if (result) result = codes[type];
     return result;
@@ -313,7 +298,7 @@ code.changeSubtreeDisabledValue = function (type, nodeCode, disabled) {
     };
     if (codesType && codesType[nodeCode]) {
         f(type, codesType[nodeCode], disabled);
-        code.save2db(type);
+        code.save(type);
         result = true;
     }
     if (result) result = codes[type];
@@ -338,7 +323,7 @@ code.addSubtree = function (type, labelList, toNodeCode, way) {
                 node.children.push(newNode);
                 codes[type + 'Arr'][newNode.id] = newNode;
             });
-            code.save2db(type);
+            code.save(type);
             result = true;
         } else {
             if (node.fid > -1) {
@@ -359,7 +344,7 @@ code.addSubtree = function (type, labelList, toNodeCode, way) {
                         codes[type + 'Arr'][newNode.id] = newNode;
                     });
                     children.splice(site, 0, ...newNodes);
-                    code.save2db(type);
+                    code.save(type);
                     result = true;
                 }
             }
@@ -378,3 +363,18 @@ function sleep(time = 1000) {
         }, time);
     });
 }
+
+function mkDirs(dirPath) {
+    if (!fs.existsSync(dirPath)) {
+        mkDirs(path.dirname(dirPath));
+        fs.mkdirSync(dirPath);
+    }
+}
+
+function mkArr(obj, arr) {
+    arr[obj.id] = obj;
+    for (let son of obj.children) {
+        mkArr(son, arr);
+    }
+}
+

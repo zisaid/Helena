@@ -7,7 +7,7 @@ const request = require('./utils/request');
 const redis = require('./utils/redis');
 
 const user = require('./biz/user');
-const code = require('./biz/code');
+const codes = require('./biz/codes');
 
 module.exports = {
     server: server,
@@ -18,5 +18,5 @@ module.exports = {
     request: request,
     redis: redis,
     user:user,
-    code:code
+    codes:codes
 };

@@ -2,32 +2,31 @@
 const path = require('path');
 
 let memLog = {};
-let basePath = '/data/log';
+let basePath = '/data/systemdata/logs';
 
 let log = {};
 
-let mkDirs = function (dirpath) {
-    if (!fs.existsSync(dirpath)) {
-        mkDirs(path.dirname(dirpath));
-        fs.mkdirSync(dirpath);
+let mkDirs = function (dirPath) {
+    if (!fs.existsSync(dirPath)) {
+        mkDirs(path.dirname(dirPath));
+        fs.mkdirSync(dirPath);
     }
 };
 
 let makePath = function (prePath, appid, userid, type) {
     userid = userid.toString();
     let temp = '0000' + userid;
-    let result = path.normalize(`${prePath}/${appid}/`
+    return path.normalize(`${prePath}/${appid}/`
         + temp.substr(temp.length - 3, 3) + '/'
         + userid + '/'
         + type + '/');
-    return result;
 };
 
-let getAllFiles = function (dirpath, files = []) {
-    if(fs.existsSync(dirpath)) {
-        let dir = fs.readdirSync(dirpath);
+let getAllFiles = function (dirPath, files = []) {
+    if(fs.existsSync(dirPath)) {
+        let dir = fs.readdirSync(dirPath);
         dir.forEach(value => {
-            let p = path.format({root: dirpath, base: value});
+            let p = path.format({root: dirPath, base: value});
             let stat = fs.statSync(p);
             if (!stat.isDirectory()) files.push(p);
         });
@@ -117,10 +116,10 @@ log.readByDay = function (appid, userid, type, day) {
 
 log.saveMemLog = function () {
     let count = 0;
-    for (let path in memLog) {
-        mkDirs(path);
-        fs.appendFileSync(path + memLog[path].date + '.txt', memLog[path].value.join('\n') + '\n');
-        delete memLog[path];
+    for (let logPath in memLog) {
+        mkDirs(logPath);
+        fs.appendFileSync(logPath + memLog[logPath].date + '.txt', memLog[logPath].value.join('\n') + '\n');
+        delete memLog[logPath];
         count++;
     }
     log.save('SYSTEM', 0, 'crond', 'save ' + count);
@@ -140,6 +139,6 @@ log.init = function(savePath) {
             date.getMonth(),
             date.getDate() + 1,
             0, 0, 0, 0)).valueOf() - date.valueOf());
-}
+};
 
 module.exports = log;
