@@ -46,11 +46,9 @@ code.onReady = function (type) {
                         codes[type + 'Arr'] = [];
                         codes[type + 'Arr'].push(codes[type]);
                     } else {
-                        for (let re of JSON.parse(data)) {
-                            codes[type] = re;
-                            codes[type + 'Arr'] = [];
-                            mkArr(codes[type], codes[type + 'Arr']);
-                        }
+                        codes[type] = JSON.parse(data);
+                        codes[type + 'Arr'] = [];
+                        mkArr(codes[type], codes[type + 'Arr']);
                     }
                     codeLock = false;
                     resolve(true);
